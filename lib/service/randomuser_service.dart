@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:demo_contacts_app/model/contact.dart';
@@ -16,11 +15,11 @@ class RandomUsersService {
 
       var response = await get(Uri.parse('https://randomuser.me/api?results='+count.toString()));
 
-      final parsed = jsonDecode(response.body).cast<Map<String, dynamic>>();
+      final parsed = jsonDecode(response.body)['results'].cast<Map<String, dynamic>>();
 
       return parsed.map<Contact>((json) => Contact.fromJson(json)).toList();
-    } catch (e) {
-      print('Error while loading and deserializing contacts');
+    } catch (e, stacktrace) {
+      print(e.toString());
       return Future.error('Error while loading and deserializing contacts');
     }
   }

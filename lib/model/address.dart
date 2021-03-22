@@ -1,5 +1,6 @@
 
-import 'package:latlng/latlng.dart';
+
+import 'package:latlong/latlong.dart';
 
 class Address {
   Address({

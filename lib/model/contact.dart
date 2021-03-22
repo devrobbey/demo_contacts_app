@@ -45,6 +45,6 @@ class Contact {
   get cell => _cell;
   get imageUrl => _imageUrl;
   get mail => _mail;
-  get address => _address;
+  Address get address => _address;
 
 }

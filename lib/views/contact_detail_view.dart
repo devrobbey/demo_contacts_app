@@ -19,21 +19,15 @@ class ContactDetailView extends StatelessWidget {
 
             _image(context),
 
-            Text(_contact.firstName + ' ' + _contact.lastName, style: const TextStyle(fontSize: 30)),
+            _name(context),
 
-            Text(_contact.cell ),
+            _cell(context),
 
-            Text(_contact.phone ),
+            _phone(context),
 
-            Text(_contact.mail ),
+            _mail(context),
 
-            Text(_contact.address.street.name + ' ' + _contact.address.street.number.toString()),
-
-            Text(_contact.address.city ),
-
-            Text(_contact.address.state ),
-
-            Text(_contact.address.country ),
+            _address(context),
 
             _map(context),
           ],
@@ -47,11 +41,83 @@ class ContactDetailView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ClipRRect(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(50.0),
             child: Image.network(_contact.imageUrl)),
       ),
     );
   }
+
+  Widget _name(context) {
+    return Text(_contact.firstName + ' ' + _contact.lastName, style: const TextStyle(fontSize: 30));
+  }
+
+
+  Widget _cell(context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8,30,8,8),
+      child: Row(
+        children: [
+          Expanded(child: Icon(Icons.phone_android)),
+          Expanded(flex: 3,child: Text(_contact.cell )),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _phone(context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(child: Icon(Icons.phone)),
+          Expanded(flex: 3, child: Text(_contact.phone )),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _mail(context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(child: Icon(Icons.email_outlined)),
+          Expanded(flex: 3,child: Text(_contact.mail )),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _address(context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(child: Icon(Icons.home_work_outlined)),
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_contact.address.street.name + ' ' + _contact.address.street.number.toString()),
+
+                Text(_contact.address.city ),
+
+                Text(_contact.address.state ),
+
+                Text(_contact.address.country ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
 
   Widget _map(context) {
     return Padding(

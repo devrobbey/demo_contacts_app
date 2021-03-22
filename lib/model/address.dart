@@ -8,7 +8,6 @@ class Address {
     this.city,
     this.state,
     this.country,
-    this.postCode,
     this.latLng,
   });
 
@@ -16,7 +15,6 @@ class Address {
   final String city;
   final String state;
   final String country;
-  final int postCode;
   final LatLng latLng;
 
   factory Address.fromJson(Map<String, dynamic> json) {
@@ -25,7 +23,6 @@ class Address {
       city: json['city'],
       state: json['state'],
       country: json['country'],
-      postCode: json['postCode'] as int,
       latLng: LatLng(
           double.parse(json['coordinates']['latitude']),
           double.parse(json['coordinates']['longitude'])),

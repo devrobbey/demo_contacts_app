@@ -25,7 +25,7 @@ class Contact {
       lastName: json['name']['last'],
       phone: json['phone'],
       cell: json['cell'],
-      imageUrl: json['picture']['medium'],
+      imageUrl: json['picture']['large'],
       mail: json['email'],
       address: Address.fromJson(json['location']),
     );

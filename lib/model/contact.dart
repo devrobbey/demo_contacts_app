@@ -47,4 +47,9 @@ class Contact {
   get mail => _mail;
   Address get address => _address;
 
+  bool hasTextMatch(String textQuery) {
+    return _lastName.toLowerCase().contains(textQuery.toLowerCase())
+        || _firstName.toLowerCase().contains(textQuery.toLowerCase());
+  }
+
 }

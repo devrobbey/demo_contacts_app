@@ -5,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class ContactsListViewBloc extends Bloc<ContactsListViewEvent, ContactsListViewState> {
-  ContactsListViewBloc() : super(ContactsListViewState(viewStatus: ViewStatus.LOADING, contacts: []));
+  ContactsListViewBloc() : super(ContactsListViewState(viewStatus: ViewStatus.LOADING, filteredContacts: []));
 
+  List<Contact> _allContacts;
+  
   @override
   Stream<ContactsListViewState> mapEventToState(ContactsListViewEvent event) async* {
 
@@ -14,8 +16,8 @@ class ContactsListViewBloc extends Bloc<ContactsListViewEvent, ContactsListViewS
       yield state.copyWith(viewStatus: ViewStatus.LOADING);
 
       try {
-        var contacts = await RandomUsersService().fetchContactsSorted(100);
-        yield state.copyWith(contacts: contacts, viewStatus: ViewStatus.VALID);
+        _allContacts = await RandomUsersService().fetchContactsSorted(100);
+        yield state.copyWith(filteredContacts: _allContacts, viewStatus: ViewStatus.VALID);
       } catch (e, stacktrace) {
         print(e.toString() + stacktrace.toString());
         yield state.copyWith(viewStatus: ViewStatus.ERROR);
@@ -24,9 +26,15 @@ class ContactsListViewBloc extends Bloc<ContactsListViewEvent, ContactsListViewS
 
     } else if (event is QueryStringChangedEvent) {
 
+      //filter contacts
+      var filteredContacts = <Contact>[];
+      _allContacts.forEach((contact) {
+        if (contact.hasTextMatch(event.queryString)) filteredContacts.add(contact);
+      });
+
+      yield state.copyWith(filteredContacts: filteredContacts);
     }
   }
-
 }
 
 
@@ -53,19 +61,19 @@ enum ViewStatus {LOADING, VALID, ERROR}
 class ContactsListViewState {
   ContactsListViewState({
     this.viewStatus,
-    this.contacts,
+    this.filteredContacts,
   });
 
   final ViewStatus viewStatus;
-  final List<Contact> contacts;
+  final List<Contact> filteredContacts;
 
   ContactsListViewState copyWith({
     ViewStatus viewStatus,
-    List<Contact> contacts,
+    List<Contact> filteredContacts,
   }) {
     return ContactsListViewState(
       viewStatus: viewStatus ?? this.viewStatus,
-      contacts: contacts ?? this.contacts,
+      filteredContacts: filteredContacts ?? this.filteredContacts,
     );
   }
 }

@@ -21,6 +21,7 @@ class ContactsListView extends StatelessWidget {
                   floating: true,
                   centerTitle: true,
                   title: CupertinoTextField(
+                    onChanged: (val) =>context.read<ContactsListViewBloc>().add(QueryStringChangedEvent(val)),
                     prefix: Padding(
                       padding:
                       const EdgeInsets.fromLTRB(9.0, 6.0, 9.0, 6.0),
@@ -40,7 +41,8 @@ class ContactsListView extends StatelessWidget {
                     [
                       if (state.viewStatus == ViewStatus.LOADING) _loadingIndicator(context),
                       if (state.viewStatus == ViewStatus.ERROR) _displayError(context),
-                      ... state.contacts.map<ContactTile>((contact) => ContactTile(contact)).toList()
+                      if (state.viewStatus == ViewStatus.VALID)
+                        ... state.filteredContacts.map<ContactTile>((contact) => ContactTile(contact)).toList()
                     ]
                   ),
                 ),

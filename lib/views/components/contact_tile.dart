@@ -9,8 +9,16 @@ class ContactTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Text(_contact.lastName, style: const TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(width: 5),
+          Text(_contact.firstName),
+        ],
+      ),
+    );
   }
 
 }

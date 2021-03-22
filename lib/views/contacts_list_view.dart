@@ -20,7 +20,7 @@ class ContactsListView extends StatelessWidget{
           } else if (contactsSnap.hasError) return Text(contactsSnap.error);
 
           return ListView.separated(
-              itemBuilder: (context, i) => Text(contactsSnap.data[i].lastName),//ContactTile(contactsSnap.data[i]),
+              itemBuilder: (context, i) => ContactTile(contactsSnap.data[i]),//ContactTile(contactsSnap.data[i]),
               separatorBuilder: (_, i) => Divider(),
               itemCount: contactsSnap.data.length);
         },),

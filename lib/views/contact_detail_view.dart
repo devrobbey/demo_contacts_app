@@ -129,7 +129,7 @@ class ContactDetailView extends StatelessWidget {
             center: LatLng(
                 _contact.address.latLng.latitude,
                 _contact.address.latLng.longitude),
-            zoom: 13.0,
+            zoom: 3.0,
           ),
           layers: [
             TileLayerOptions(

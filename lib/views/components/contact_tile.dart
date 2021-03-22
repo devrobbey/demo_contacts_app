@@ -12,6 +12,7 @@ class ContactTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => ContactDetailView(_contact))),
       child: Padding(
         padding: const EdgeInsets.all(8.0),

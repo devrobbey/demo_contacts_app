@@ -13,22 +13,23 @@ class ContactsListView extends StatelessWidget{
         title: Text('Contacts'),
       ),
       body: FutureBuilder<List<Contact>>(
-        future: RandomUsersService().fetchContacts(100),
+        future: RandomUsersService().fetchContactsSorted(100),
         builder: (BuildContext context, contactsSnap) {
           if (contactsSnap.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (contactsSnap.hasError) return Text(contactsSnap.error);
+            return _loadingIndicator(context);
+          } else if (contactsSnap.hasError) return Text(contactsSnap.error.toString());
 
           return ListView.separated(
-              itemBuilder: (context, i) => ContactTile(contactsSnap.data[i]),//ContactTile(contactsSnap.data[i]),
+              itemBuilder: (context, i) => ContactTile(contactsSnap.data[i]),
               separatorBuilder: (_, i) => Divider(),
               itemCount: contactsSnap.data.length);
         },),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        tooltip: 'Create user',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _loadingIndicator(context) {
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
 }

@@ -1,56 +1,54 @@
 
-import 'package:demo_contacts_app/model/contact.dart';
-import 'package:demo_contacts_app/service/randomuser_service.dart';
 import 'package:demo_contacts_app/views/components/contact_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ContactsListView extends StatelessWidget{
+import 'components/contacts_list_view_bloc.dart';
+
+class ContactsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Contacts'),
-      ),
-      body: FutureBuilder<List<Contact>>(
-        future: RandomUsersService().fetchContactsSorted(100),
-        builder: (BuildContext context, contactsSnap) {
-          if (contactsSnap.connectionState == ConnectionState.waiting) {
-            return _loadingIndicator(context);
-          } else if (contactsSnap.hasError) return Text(contactsSnap.error.toString());
-
-          return CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                floating: true,
-                centerTitle: true,
-                title: CupertinoTextField(
-                  prefix: Padding(
-                    padding:
-                    const EdgeInsets.fromLTRB(9.0, 6.0, 9.0, 6.0),
-                    child: Icon(
-                      Icons.search,
-                      color: Color(0xffC4C6CC),
+      body: BlocProvider(
+        create: (BuildContext context) => ContactsListViewBloc()..add(StartLoadingEvent()),
+        child: BlocBuilder<ContactsListViewBloc, ContactsListViewState>(
+          builder: (context, state) {
+            return CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  centerTitle: true,
+                  title: CupertinoTextField(
+                    prefix: Padding(
+                      padding:
+                      const EdgeInsets.fromLTRB(9.0, 6.0, 9.0, 6.0),
+                      child: Icon(
+                        Icons.search,
+                        color: Color(0xffC4C6CC),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Color(0xffF0F1F5),
                     ),
                   ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Color(0xffF0F1F5),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      if (state.viewStatus == ViewStatus.LOADING) _loadingIndicator(context),
+                      if (state.viewStatus == ViewStatus.ERROR) _displayError(context),
+                      ... state.contacts.map<ContactTile>((contact) => ContactTile(contact)).toList()
+                    ]
                   ),
                 ),
-              ),
-              SliverFixedExtentList(
-                itemExtent: 40.0,
-                delegate: SliverChildBuilderDelegate(
-                  (context, i) {
-                    return ContactTile(contactsSnap.data[i]);
-                  }
-                ),
-              )
-            ],
-          );
-        },),
+              ],
+            );
+          }
+        ),
+      ),
     );
   }
 
@@ -58,5 +56,9 @@ class ContactsListView extends StatelessWidget{
     return Center(
       child: CircularProgressIndicator(),
     );
+  }
+
+  Widget _displayError(context) {
+    return Text('Something went wrong fetching and deserializing data.');
   }
 }

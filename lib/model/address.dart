@@ -1,14 +1,13 @@
 
-
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 
 class Address {
   Address({
-    this.street,
-    this.city,
-    this.state,
-    this.country,
-    this.latLng,
+    required this.street,
+    required this.city,
+    required this.state,
+    required this.country,
+    required this.latLng,
   });
 
   final Street street;
@@ -34,8 +33,8 @@ class Address {
 
 class Street {
   Street({
-    this.number,
-    this.name,
+    required this.number,
+    required this.name,
   });
 
   final int number;

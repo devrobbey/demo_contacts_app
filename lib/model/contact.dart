@@ -4,13 +4,13 @@ import 'address.dart';
 
 class Contact {
   Contact({
-    String firstName,
-    String lastName,
-    String phone,
-    String cell,
-    String imageUrl,
-    String mail,
-    Address address,})
+    required String firstName,
+    required String lastName,
+    required String phone,
+    required String cell,
+    required String imageUrl,
+    required String mail,
+    required Address address,})
       : _firstName = firstName,
         _lastName = lastName,
         _phone = phone,

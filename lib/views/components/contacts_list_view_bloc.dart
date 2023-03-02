@@ -1,79 +1,70 @@
+import 'dart:developer';
 
 import 'package:demo_contacts_app/model/contact.dart';
 import 'package:demo_contacts_app/service/randomuser_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+class ContactsListBloc extends Bloc<ContactsListEvent, ContactsListState> {
+  ContactsListBloc() : super(InitialState()) {
+    on<LoadContactsEvent>(_onStartLoading);
+    on<SearchInContactsEvent>(_onFilterContacts);
+  }
 
-class ContactsListViewBloc extends Bloc<ContactsListViewEvent, ContactsListViewState> {
-  ContactsListViewBloc() : super(ContactsListViewState(viewStatus: ViewStatus.LOADING, filteredContacts: []));
+  List<Contact> allContactsCached = [];
 
-  List<Contact> _allContacts;
-  
-  @override
-  Stream<ContactsListViewState> mapEventToState(ContactsListViewEvent event) async* {
+  void _onStartLoading(LoadContactsEvent event, Emitter<ContactsListState> emit) async {
+    emit(LoadingState());
 
-    if (event is StartLoadingEvent) {
-      yield state.copyWith(viewStatus: ViewStatus.LOADING);
-
-      try {
-        _allContacts = await RandomUsersService().fetchContactsSorted(100);
-        yield state.copyWith(filteredContacts: _allContacts, viewStatus: ViewStatus.VALID);
-      } catch (e, stacktrace) {
-        print(e.toString() + stacktrace.toString());
-        yield state.copyWith(viewStatus: ViewStatus.ERROR);
-      }
-
-
-    } else if (event is QueryStringChangedEvent) {
-
-      //filter contacts
-      var filteredContacts = <Contact>[];
-      _allContacts.forEach((contact) {
-        if (contact.hasTextMatch(event.queryString)) filteredContacts.add(contact);
-      });
-
-      yield state.copyWith(filteredContacts: filteredContacts);
+    try {
+      allContactsCached = await RandomUsersService().fetchContactsSorted(100);
+      emit(LoadedState(contacts: allContactsCached));
+    } catch (e, stacktrace) {
+      log(e.toString() + stacktrace.toString());
+      emit(ErrorState());
     }
   }
-}
 
+  void _onFilterContacts(SearchInContactsEvent event, Emitter<ContactsListState> emit) async {
+    //filter contacts
+    var filteredContacts = allContactsCached
+        .where((c) => (c.firstName+c.lastName).toLowerCase().contains(event.query))
+        .toList();
+
+
+    emit( FilteredState(filteredContacts: filteredContacts));
+  }
+}
 
 ///// BLoC EVENTS
 
-abstract class ContactsListViewEvent {
-  const ContactsListViewEvent();
-}
+abstract class ContactsListEvent {}
 
-class StartLoadingEvent extends ContactsListViewEvent {
-  const StartLoadingEvent();
-}
+class LoadContactsEvent extends ContactsListEvent {}
 
-class QueryStringChangedEvent extends ContactsListViewEvent {
-  const QueryStringChangedEvent(this.queryString);
-  final String queryString;
-}
+class SearchInContactsEvent extends ContactsListEvent {
+  final String query;
 
+  SearchInContactsEvent({required this.query});
+}
 
 ////// BLoC STATE
 
-enum ViewStatus {LOADING, VALID, ERROR}
+abstract class ContactsListState {}
 
-class ContactsListViewState {
-  ContactsListViewState({
-    this.viewStatus,
-    this.filteredContacts,
-  });
+class InitialState extends ContactsListState {}
 
-  final ViewStatus viewStatus;
+class LoadingState extends ContactsListState {}
+
+class LoadedState extends ContactsListState {
+  final List<Contact> contacts;
+
+  LoadedState({required this.contacts});
+}
+
+class ErrorState extends ContactsListState {}
+
+class FilteredState extends ContactsListState {
   final List<Contact> filteredContacts;
 
-  ContactsListViewState copyWith({
-    ViewStatus viewStatus,
-    List<Contact> filteredContacts,
-  }) {
-    return ContactsListViewState(
-      viewStatus: viewStatus ?? this.viewStatus,
-      filteredContacts: filteredContacts ?? this.filteredContacts,
-    );
-  }
+  FilteredState({required this.filteredContacts});
 }
